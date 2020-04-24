@@ -1,3 +1,5 @@
+## This fork of Box2D adds a cmake install step so it can be easily built with other cmake projects.
+
 ![Box2D Logo](https://box2d.org/images/logo.svg)
 
 # Build Status
