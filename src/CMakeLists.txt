@@ -95,14 +95,33 @@ set(BOX2D_HEADER_FILES
 	../include/box2d/b2_world_callbacks.h
 	../include/box2d/box2d.h)
 
+# @TODO: Fix install directory. This installs to /usr/local on linux, not /usr/local/lib
+set(BOX2D_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/box2d)
+
 add_library(box2d STATIC ${BOX2D_SOURCE_FILES} ${BOX2D_HEADER_FILES})
-target_include_directories(box2d PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)
-target_include_directories(box2d PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_include_directories(box2d
+	PRIVATE
+		${CMAKE_CURRENT_SOURCE_DIR}
+	PUBLIC
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include> # for headers when building
+		$<INSTALL_INTERFACE:${BOX2D_INSTALL_DIR}/include> # for headers when installing
+)
+
 set_target_properties(box2d PROPERTIES
 	CXX_STANDARD 11
-    CXX_STANDARD_REQUIRED YES
-    CXX_EXTENSIONS NO
+	CXX_STANDARD_REQUIRED YES
+	CXX_EXTENSIONS NO
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "src" FILES ${BOX2D_SOURCE_FILES})
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/../include" PREFIX "include" FILES ${BOX2D_HEADER_FILES})
+
+install(TARGETS box2d EXPORT box2d DESTINATION "${BOX2D_INSTALL_DIR}")
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/ DESTINATION "${BOX2D_INSTALL_DIR}/include")
+install(
+	FILES ${PROJECT_SOURCE_DIR}/Config.cmake.in
+	RENAME box2dConfig.cmake
+	DESTINATION "${BOX2D_INSTALL_DIR}"
+)
+install(EXPORT box2d DESTINATION "${BOX2D_INSTALL_DIR}")
